@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TerraWatch - Recuperar Senha</title>
+    <link rel="stylesheet" href="/shared/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="auth-page">
+    <div class="auth-container">
+        <div class="auth-card">
+            <a href="/" class="auth-logo-link">
+                <img src="/shared/img/logo-icon.png" alt="TerraWatch Logo" class="auth-logo">
+                <span class="auth-logo-text">TerraWatch</span>
+            </a>
+            <h1>Recuperar Senha</h1>
+            <p class="auth-subtitle">Digite seu email para receber instruções</p>
+
+            <div id="step1" class="auth-step active">
+                <form id="forgotForm" class="auth-form">
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" required 
+                               class="form-control" autocomplete="email">
+                    </div>
+                    <div id="forgotAlert" class="alert" style="display: none;"></div>
+                    <button type="submit" class="btn btn-primary btn-block">Enviar Instruções</button>
+                </form>
+            </div>
+
+            <div id="step2" class="auth-step">
+                <div class="verification-sent">
+                    <i class="success-icon">✓</i>
+                    <h2>Email Enviado!</h2>
+                    <p>Enviamos instruções para recuperar sua senha no email fornecido. Por favor, verifique sua caixa de entrada.</p>
+                    <div class="resend-timer">
+                        <p>Não recebeu o email? Você pode solicitar novamente em <span id="timer">60</span> segundos</p>
+                    </div>
+                    <button id="resendBtn" class="btn btn-outline-primary btn-block" disabled>
+                        Reenviar Email
+                    </button>
+                </div>
+            </div>
+
+            <div class="auth-footer">
+                <p>Lembrou sua senha? <a href="/features/auth/login">Voltar ao Login</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="/shared/js/common.js"></script>
+    <script>
+        document.getElementById('forgotForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            ui.showLoading(true);
+
+            const email = document.getElementById('email').value;
+
+            try {
+                const response = await fetch('/rest/auth/forgot-password', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showStep2();
+                    startResendTimer();
+                } else {
+                    showAlert(data.message || 'Erro ao processar solicitação', 'error');
+                }
+            } catch (error) {
+                showAlert('Erro ao conectar com o servidor', 'error');
+                console.error('Forgot password error:', error);
+            } finally {
+                ui.showLoading(false);
+            }
+        });
+
+        function showAlert(message, type) {
+            const alert = document.getElementById('forgotAlert');
+            alert.textContent = message;
+            alert.className = `alert alert-${type}`;
+            alert.style.display = 'block';
+        }
+
+        function showStep2() {
+            document.getElementById('step1').classList.remove('active');
+            document.getElementById('step2').classList.add('active');
+        }
+
+        function startResendTimer() {
+            const timerElement = document.getElementById('timer');
+            const resendBtn = document.getElementById('resendBtn');
+            let timeLeft = 60;
+
+            const timer = setInterval(() => {
+                timeLeft--;
+                timerElement.textContent = timeLeft;
+
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    resendBtn.disabled = false;
+                    document.querySelector('.resend-timer').style.display = 'none';
+                }
+            }, 1000);
+
+            resendBtn.addEventListener('click', async () => {
+                if (!resendBtn.disabled) {
+                    resendBtn.disabled = true;
+                    document.querySelector('.resend-timer').style.display = 'block';
+                    timeLeft = 60;
+                    timerElement.textContent = timeLeft;
+                    startResendTimer();
+
+                    // Resend email logic
+                    const email = document.getElementById('email').value;
+                    try {
+                        const response = await fetch('/rest/auth/forgot-password', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ email })
+                        });
+
+                        if (!response.ok) {
+                            const data = await response.json();
+                            showAlert(data.message || 'Erro ao reenviar email', 'error');
+                        }
+                    } catch (error) {
+                        showAlert('Erro ao conectar com o servidor', 'error');
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html> 

@@ -1,0 +1,718 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TerraWatch - Monitoramento Ambiental Inteligente</title>
+  <link rel="stylesheet" href="/shared/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="container">
+      <div class="nav-brand">
+        <img src="/shared/img/logo-icon.png" alt="TerraWatch Logo" class="nav-logo">
+        <span class="nav-title">TerraWatch</span>
+      </div>
+      <div class="nav-links">
+        <a href="/features/dashboard" class="btn btn-outline">Explorar</a>
+        <span class="nav-separator">|</span>
+        <a href="/features/auth/login" class="btn btn-outline">Entrar</a>
+        <a href="/features/auth/register" class="btn btn-primary">Criar Conta</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="hero">
+    <div class="container">
+      <div class="hero-content">
+        <h1>Monitoramento Ambiental Inteligente</h1>
+        <p class="hero-text">
+          Transforme dados em ação. Monitore, analise e proteja o meio ambiente 
+          com nossa plataforma avançada de observação terrestre e colaboração social.
+        </p>
+        <div class="hero-buttons">
+          <a href="/features/auth/register" class="btn btn-primary btn-large">Faça Parte Agora</a>
+          <a href="/features/dashboard" class="btn btn-outline btn-large">Conheça a Plataforma</a>
+        </div>
+        <div class="hero-video">
+          <video autoplay loop muted playsinline>
+            <source src="https://storage.googleapis.com/video-landing-page-terrawatch-codesweepers/13895128_3840_2160_60fps.mp4" type="video/mp4">
+            Seu navegador não suporta vídeos HTML5.
+          </video>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <section id="features" class="features">
+    <div class="container">
+      <h2>Recursos Principais</h2>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="ri-bar-chart-box-line"></i>
+          </div>
+          <h3>Análise de Dados</h3>
+          <p>Visualize e analise dados ambientais em tempo real com gráficos interativos e relatórios detalhados.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="ri-earth-line"></i>
+          </div>
+          <h3>Imagens de Satélite</h3>
+          <p>Acesse imagens de satélite de alta resolução para monitorar mudanças ambientais ao longo do tempo.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="ri-smartphone-line"></i>
+          </div>
+          <h3>Acesso Mobile</h3>
+          <p>Monitore seus dados de qualquer lugar, a qualquer momento, com nossa interface responsiva e intuitiva.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="user-types" class="user-types">
+    <div class="container">
+      <h2>Para Todos os Tipos de Usuários</h2>
+      <div class="user-types-grid">
+        <div class="user-type-card">
+          <div class="user-type-icon">
+            <i class="ri-user-line"></i>
+          </div>
+          <h3>Usuário Comum (RU)</h3>
+          <p>Acesse funcionalidades básicas de monitoramento, visualize dados públicos e participe da comunidade ambiental.</p>
+          <ul class="user-benefits">
+            <li><i class="ri-check-line"></i> Visualização de dados públicos</li>
+            <li><i class="ri-check-line"></i> Acesso ao feed social</li>
+            <li><i class="ri-check-line"></i> Participação em discussões</li>
+          </ul>
+        </div>
+        <div class="user-type-card featured">
+          <div class="user-type-icon">
+            <i class="ri-home-line"></i>
+          </div>
+          <h3>Proprietário de Terreno (ADLU)</h3>
+          <p>Gerencie suas propriedades com ferramentas avançadas de monitoramento e análise personalizada.</p>
+          <ul class="user-benefits">
+            <li><i class="ri-check-line"></i> Gestão de propriedades</li>
+            <li><i class="ri-check-line"></i> Relatórios personalizados</li>
+            <li><i class="ri-check-line"></i> Alertas de mudanças</li>
+            <li><i class="ri-check-line"></i> Histórico de atividades</li>
+          </ul>
+        </div>
+        <div class="user-type-card">
+          <div class="user-type-icon">
+            <i class="ri-building-line"></i>
+          </div>
+          <h3>Operador Parceiro (PO)</h3>
+          <p>Represente sua organização com acesso completo às ferramentas profissionais de monitoramento.</p>
+          <ul class="user-benefits">
+            <li><i class="ri-check-line"></i> Gestão de equipes</li>
+            <li><i class="ri-check-line"></i> Relatórios corporativos</li>
+            <li><i class="ri-check-line"></i> API de integração</li>
+            <li><i class="ri-check-line"></i> Suporte prioritário</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="social-features" class="social-features">
+    <div class="container">
+      <h2>Colaboração e Comunidade</h2>
+      <div class="social-grid">
+        <div class="social-card">
+          <div class="social-icon">
+            <i class="ri-chat-3-line"></i>
+          </div>
+          <h3>Feed Social</h3>
+          <p>Conecte-se com outros usuários, compartilhe descobertas e participe de discussões sobre questões ambientais.</p>
+          <div class="social-preview">
+            <div class="post-preview">
+              <div class="post-header">
+                <div class="post-avatar"></div>
+                <div class="post-info">
+                  <span class="post-author">Maria Silva</span>
+                  <span class="post-time">há 2 horas</span>
+                </div>
+              </div>
+              <p class="post-text">"Descoberta interessante na região norte - mudanças significativas na cobertura vegetal!"</p>
+            </div>
+          </div>
+        </div>
+        <div class="social-card">
+          <div class="social-icon">
+            <i class="ri-notification-3-line"></i>
+          </div>
+          <h3>Sistema de Notificações</h3>
+          <p>Receba alertas em tempo real sobre mudanças ambientais, atividades da comunidade e atualizações importantes.</p>
+          <div class="notification-preview">
+            <div class="notification-item">
+              <i class="ri-alert-line"></i>
+              <span>Nova atividade detectada na sua região</span>
+            </div>
+            <div class="notification-item">
+              <i class="ri-message-2-line"></i>
+              <span>João comentou na sua publicação</span>
+            </div>
+          </div>
+        </div>
+        <div class="social-card">
+          <div class="social-icon">
+            <i class="ri-team-line"></i>
+          </div>
+          <h3>Atividades Colaborativas</h3>
+          <p>Participe de projetos colaborativos, compartilhe dados e contribua para pesquisas ambientais em larga escala.</p>
+          <div class="activity-preview">
+            <div class="activity-item">
+              <i class="ri-calendar-line"></i>
+              <span>Projeto de monitoramento florestal</span>
+            </div>
+            <div class="activity-item">
+              <i class="ri-group-line"></i>
+              <span>15 participantes ativos</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="workflow" class="workflow">
+    <div class="container">
+      <h2>Fluxo de Trabalho Inteligente</h2>
+      <div class="workflow-steps">
+        <div class="workflow-step">
+          <div class="step-number">1</div>
+          <div class="step-content">
+            <h3>Coleta de Dados</h3>
+            <p>Nossos satélites e sensores coletam dados ambientais precisos em tempo real, incluindo imagens de alta resolução e métricas de qualidade ambiental.</p>
+          </div>
+        </div>
+        <div class="workflow-step">
+          <div class="step-number">2</div>
+          <div class="step-content">
+            <h3>Processamento Inteligente</h3>
+            <p>Algoritmos avançados de IA processam e analisam os dados para identificar padrões, tendências e anomalias ambientais.</p>
+          </div>
+        </div>
+        <div class="workflow-step">
+          <div class="step-number">3</div>
+          <div class="step-content">
+            <h3>Visualização Interativa</h3>
+            <p>Acesse insights valiosos através de dashboards personalizados, gráficos interativos e relatórios detalhados.</p>
+          </div>
+        </div>
+        <div class="workflow-step">
+          <div class="step-number">4</div>
+          <div class="step-content">
+            <h3>Colaboração Social</h3>
+            <p>Compartilhe descobertas, participe de discussões e contribua para a comunidade global de monitoramento ambiental.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="advanced-features" class="advanced-features">
+    <div class="container">
+      <h2>Funcionalidades Avançadas</h2>
+      <div class="advanced-grid">
+        <div class="advanced-card">
+          <div class="advanced-icon">
+            <i class="ri-file-chart-line"></i>
+          </div>
+          <h3>Fichas de Execução</h3>
+          <p>Gerencie projetos de monitoramento com fichas de execução detalhadas, acompanhamento de progresso e relatórios automáticos.</p>
+        </div>
+        <div class="advanced-card">
+          <div class="advanced-icon">
+            <i class="ri-camera-line"></i>
+          </div>
+          <h3>Upload de Fotos</h3>
+          <p>Compartilhe evidências visuais das suas descobertas com upload de fotos e galeria de atividades.</p>
+        </div>
+        <div class="advanced-card">
+          <div class="advanced-icon">
+            <i class="ri-map-pin-line"></i>
+          </div>
+          <h3>Geolocalização</h3>
+          <p>Marque locais específicos, acompanhe mudanças geográficas e visualize dados em mapas interativos.</p>
+        </div>
+        <div class="advanced-card">
+          <div class="advanced-icon">
+            <i class="ri-time-line"></i>
+          </div>
+          <h3>Histórico Temporal</h3>
+          <p>Analise mudanças ao longo do tempo com gráficos temporais e comparações históricas.</p>
+        </div>
+        <div class="advanced-card">
+          <div class="advanced-icon">
+            <i class="ri-shield-check-line"></i>
+          </div>
+          <h3>Segurança Avançada</h3>
+          <p>Autenticação JWT, controle de acesso por roles e proteção de dados sensíveis.</p>
+        </div>
+        <div class="advanced-card">
+          <div class="advanced-icon">
+            <i class="ri-cloud-line"></i>
+          </div>
+          <h3>Infraestrutura Escalável</h3>
+          <p>Plataforma baseada em Google Cloud com armazenamento seguro e alta disponibilidade.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="impact" class="impact">
+    <div class="container">
+      <h2>Nosso Impacto</h2>
+      <div class="impact-stats">
+        <div class="stat-card">
+          <div class="stat-number">1M+</div>
+          <div class="stat-label">Hectares Monitorados</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">500+</div>
+          <div class="stat-label">Organizações Parceiras</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">98%</div>
+          <div class="stat-label">Precisão nos Dados</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">10K+</div>
+          <div class="stat-label">Usuários Ativos</div>
+        </div>
+      </div>
+      <div class="impact-description">
+        <p>Juntos, estamos criando uma rede global de monitoramento ambiental que combina tecnologia avançada com colaboração humana para proteger nosso planeta.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="cta" class="cta">
+    <div class="container">
+      <div class="cta-content">
+        <h2>Pronto para Fazer a Diferença?</h2>
+        <p>Junte-se à comunidade TerraWatch e ajude a proteger nosso planeta através do monitoramento inteligente e colaboração social.</p>
+        <div class="cta-buttons">
+          <a href="/features/auth/register" class="btn btn-primary btn-large">Criar Conta Gratuita</a>
+          <a href="/features/dashboard" class="btn btn-outline btn-large">Ver Demonstração</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-brand">
+          <img src="/shared/img/logo-icon.png" alt="TerraWatch Logo" class="footer-logo">
+          <span class="footer-title">TerraWatch</span>
+        </div>
+        <p>&copy; 2024 TerraWatch. Todos os direitos reservados.</p>
+      </div>
+    </div>
+  </footer>
+
+  <style>
+    /* User Types Section */
+    .user-types {
+      padding: 6rem 0;
+      background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    }
+
+    .user-types-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+
+    .user-type-card {
+      background: white;
+      padding: 2.5rem;
+      border-radius: 1.5rem;
+      box-shadow: var(--shadow);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .user-type-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .user-type-card.featured {
+      border: 2px solid var(--primary-color);
+      background: linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%);
+    }
+
+    .user-type-icon {
+      width: 4rem;
+      height: 4rem;
+      background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+      color: white;
+      border-radius: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      margin: 0 auto 1.5rem;
+    }
+
+    .user-benefits {
+      list-style: none;
+      padding: 0;
+      margin-top: 1.5rem;
+      text-align: left;
+    }
+
+    .user-benefits li {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+      color: var(--text-light);
+    }
+
+    .user-benefits i {
+      color: var(--primary-color);
+      font-size: 1.1rem;
+    }
+
+    /* Social Features Section */
+    .social-features {
+      padding: 6rem 0;
+      background: white;
+    }
+
+    .social-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+
+    .social-card {
+      background: white;
+      padding: 2rem;
+      border-radius: 1.5rem;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border-color);
+      transition: all 0.3s ease;
+    }
+
+    .social-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .social-icon {
+      width: 3rem;
+      height: 3rem;
+      background: var(--primary-color);
+      color: white;
+      border-radius: 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      margin-bottom: 1rem;
+    }
+
+    .social-preview, .notification-preview, .activity-preview {
+      margin-top: 1.5rem;
+      padding: 1rem;
+      background: var(--background-color);
+      border-radius: 0.75rem;
+    }
+
+    .post-preview {
+      background: white;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      border: 1px solid var(--border-color);
+    }
+
+    .post-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .post-avatar {
+      width: 2rem;
+      height: 2rem;
+      background: var(--primary-color);
+      border-radius: 50%;
+    }
+
+    .post-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .post-author {
+      font-weight: 600;
+      color: var(--text-color);
+    }
+
+    .post-time {
+      font-size: 0.875rem;
+      color: var(--text-light);
+    }
+
+    .post-text {
+      color: var(--text-color);
+      line-height: 1.5;
+    }
+
+    .notification-item, .activity-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem;
+      background: white;
+      border-radius: 0.5rem;
+      margin-bottom: 0.5rem;
+      border: 1px solid var(--border-color);
+    }
+
+    .notification-item i, .activity-item i {
+      color: var(--primary-color);
+    }
+
+    /* Workflow Section */
+    .workflow {
+      padding: 6rem 0;
+      background: linear-gradient(135deg, #e2e8f0 0%, #f8fafc 100%);
+    }
+
+    .workflow-steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+
+    .workflow-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 1.5rem;
+      background: white;
+      padding: 2rem;
+      border-radius: 1.5rem;
+      box-shadow: var(--shadow);
+      transition: all 0.3s ease;
+    }
+
+    .workflow-step:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .step-number {
+      width: 3rem;
+      height: 3rem;
+      background: var(--primary-color);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1.25rem;
+      flex-shrink: 0;
+    }
+
+    .step-content h3 {
+      margin-bottom: 0.75rem;
+      color: var(--text-color);
+    }
+
+    .step-content p {
+      color: var(--text-light);
+      line-height: 1.6;
+    }
+
+    /* Advanced Features Section */
+    .advanced-features {
+      padding: 6rem 0;
+      background: white;
+    }
+
+    .advanced-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+
+    .advanced-card {
+      background: white;
+      padding: 2rem;
+      border-radius: 1.5rem;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border-color);
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .advanced-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--primary-color);
+    }
+
+    .advanced-icon {
+      width: 3.5rem;
+      height: 3.5rem;
+      background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+      color: white;
+      border-radius: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      margin: 0 auto 1.5rem;
+    }
+
+    /* CTA Section */
+    .cta {
+      padding: 6rem 0;
+      background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+      color: white;
+      text-align: center;
+    }
+
+    .cta-content h2 {
+      color: white;
+      margin-bottom: 1rem;
+    }
+
+    .cta-content p {
+      font-size: 1.125rem;
+      margin-bottom: 2rem;
+      opacity: 0.9;
+    }
+
+    .cta-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .cta .btn-outline {
+      border-color: white;
+      color: white;
+    }
+
+         .cta .btn-outline:hover {
+       background: white;
+       color: var(--primary-dark);
+     }
+
+     /* Impact Section */
+     .impact {
+       padding: 6rem 0;
+       background: linear-gradient(180deg, white 0%, var(--background-color) 100%);
+     }
+
+     .impact-stats {
+       display: grid;
+       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+       gap: 2rem;
+       margin-top: 3rem;
+     }
+
+     .stat-card {
+       background: white;
+       padding: 2rem;
+       border-radius: 1rem;
+       box-shadow: var(--shadow);
+       text-align: center;
+       position: relative;
+       overflow: hidden;
+     }
+
+     .stat-card::before {
+       content: '';
+       position: absolute;
+       top: 0;
+       left: 0;
+       right: 0;
+       height: 4px;
+       background: linear-gradient(90deg, var(--primary-color), var(--primary-light));
+     }
+
+     .stat-number {
+       font-size: 2.5rem;
+       font-weight: 700;
+       color: var(--primary-dark);
+       margin-bottom: 0.5rem;
+     }
+
+     .stat-label {
+       color: var(--text-light);
+       font-size: 1.125rem;
+     }
+
+     .impact-description {
+       text-align: center;
+       margin-top: 3rem;
+       max-width: 800px;
+       margin-left: auto;
+       margin-right: auto;
+     }
+
+     .impact-description p {
+       font-size: 1.125rem;
+       color: var(--text-light);
+       line-height: 1.6;
+     }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .user-types-grid,
+      .social-grid,
+      .workflow-steps,
+      .advanced-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .workflow-step {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .cta-buttons {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .user-type-card,
+      .social-card,
+      .advanced-card {
+        padding: 1.5rem;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .impact-stats {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  </style>
+</body>
+</html>

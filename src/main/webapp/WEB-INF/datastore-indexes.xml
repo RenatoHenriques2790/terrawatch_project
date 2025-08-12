@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<datastore-indexes autoGenerate="true">
+    <!-- Index for SocialComment queries by postId and timestamp -->
+    <datastore-index kind="SocialComment" ancestor="false" source="manual">
+        <property name="postId" direction="asc"/>
+        <property name="timestamp" direction="asc"/>
+    </datastore-index>
+    
+    <!-- Index for PhotoLike queries -->
+    <datastore-index kind="PhotoLike" ancestor="false" source="manual">
+        <property name="photoId" direction="asc"/>
+        <property name="username" direction="asc"/>
+    </datastore-index>
+    
+    <!-- Index for VideoLike queries -->
+    <datastore-index kind="VideoLike" ancestor="false" source="manual">
+        <property name="videoId" direction="asc"/>
+        <property name="username" direction="asc"/>
+    </datastore-index>
+    
+    <!-- Index for CommentLike queries -->
+    <datastore-index kind="CommentLike" ancestor="false" source="manual">
+        <property name="commentId" direction="asc"/>
+        <property name="username" direction="asc"/>
+    </datastore-index>
+    
+    <!-- Index for PostLike queries -->
+    <datastore-index kind="PostLike" ancestor="false" source="manual">
+        <property name="postId" direction="asc"/>
+        <property name="username" direction="asc"/>
+    </datastore-index>
+</datastore-indexes>

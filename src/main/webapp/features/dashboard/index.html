@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>TerraWatch Dashboard</title>
+    <link rel="stylesheet" href="/shared/css/style.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <!--Google Maps API-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.8.0/proj4.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCNdS0GpAEFgcH01koEcBZERFFRnhgfWCs&loading=async"
+        defer>
+        </script>
+</head>
+
+<script>
+    // Definição ETRS89 / PT‑TM06 (EPSG:3763)
+    proj4.defs(
+        "EPSG:3763",
+        "+proj=tmerc +lat_0=39.6682583333333 +lon_0=-8.13310833333333 " +
+        "+k=1 +x_0=0 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs"
+    );
+
+    // Alias para WGS84
+    const CRS_SRC = "EPSG:3763";
+    const CRS_DST = "EPSG:4326";  // WGS84 lat/lng
+</script>
+
+<body class="dashboard-page">
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="dashboard-sidebar">
+            <div class="sidebar-header">
+                <a href="/" class="sidebar-brand">
+                    <img src="/shared/img/logo-icon.png" alt="TerraWatch" class="sidebar-logo">
+                    <span class="sidebar-title">TerraWatch</span>
+                </a>
+                <button class="sidebar-toggle" id="sidebarToggle">
+                    <i class="ri-menu-fold-line"></i>
+                </button>
+            </div>
+
+            <nav class="sidebar-nav">
+                <!-- Main Navigation -->
+                <div class="nav-section">
+                    <h3 class="nav-section-title">Principal</h3>
+                    <a href="#" class="nav-item active" data-section="dashboard">
+                        <i class="ri-dashboard-line"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="#" class="nav-item" data-section="map">
+                        <i class="ri-map-2-line"></i>
+                        <span>Mapa Interativo</span>
+                    </a>
+                </div>
+
+                <!-- Admin Section (visible to SYSADMIN/SYSBO) -->
+                <div class="nav-section" id="adminSection" style="display: none;">
+                    <h3 class="nav-section-title">Administração</h3>
+                    <a href="#" class="nav-item" data-section="users">
+                        <i class="ri-user-settings-line"></i>
+                        <span>Gestão de Usuários</span>
+                    </a>
+                </div>
+
+                <!-- Operator Section (visible to worksheet roles) -->
+                <div class="nav-section" id="operatorSection" style="display: none;">
+                    <h3 class="nav-section-title">Operações</h3>
+                    <a href="#" class="nav-item" data-section="worksheets">
+                        <i class="ri-file-list-3-line"></i>
+                        <span>Worksheets</span>
+                    </a>
+                    <a href="#" class="nav-item" data-section="executionsheets">
+                        <i class="ri-clipboard-line"></i>
+                        <span>Folhas de Execução</span>
+                    </a>
+
+                </div>
+
+                <!-- Social Section -->
+                <div class="nav-section" id="socialSection">
+                    <h3 class="nav-section-title">Social</h3>
+                    <a href="#" class="nav-item" data-section="socialfeed">
+                        <i class="ri-chat-3-line"></i>
+                        <span>Feed Social</span>
+                    </a>
+                </div>
+
+                <!-- User Section -->
+                <div class="nav-section" id="userSection">
+                    <h3 class="nav-section-title">Usuário</h3>
+                    <a href="#" class="nav-item" data-section="profile" id="profileNavItem">
+                        <i class="ri-user-line"></i>
+                        <span>Meu Perfil</span>
+                    </a>
+                </div>
+
+                <!-- Guest Section (for non-authenticated users) -->
+                <div class="nav-section" id="guestSection" style="display: none;">
+                    <h3 class="nav-section-title">Acesso Público</h3>
+                    <a href="#" class="nav-item" data-section="publicInfo">
+                        <i class="ri-information-line"></i>
+                        <span>Informações</span>
+                    </a>
+                    <a href="/features/auth/login" class="nav-item">
+                        <i class="ri-login-box-line"></i>
+                        <span>Entrar</span>
+                    </a>
+                    <a href="/features/auth/register" class="nav-item">
+                        <i class="ri-user-add-line"></i>
+                        <span>Registrar</span>
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="dashboard-main">
+            <!-- Header -->
+            <header class="dashboard-header with-sidebar">
+                <button id="mobileMenuToggle" class="mobile-only">
+                    <i class="ri-menu-line"></i>
+                </button>
+
+                <div class="header-section">
+                    <i class="ri-dashboard-line header-section-icon"></i>
+                    <h1 class="header-title">Dashboard</h1>
+                </div>
+
+                <div class="header-actions">
+                    <div class="header-search">
+                        <i class="ri-search-line"></i>
+                        <input type="text" placeholder="Pesquisar..." id="globalSearch">
+                    </div>
+
+                    <button class="notifications-toggle" id="notificationsToggle">
+                        <i class="ri-notification-3-line"></i>
+                        <span class="notifications-badge" id="notificationsBadge" style="display: none;">0</span>
+                    </button>
+
+                    <!-- Authenticated user profile -->
+                    <div class="profile-section" id="profileDropdownTrigger" style="display: none;">
+                        <div class="profile-avatar" id="userAvatar"></div>
+                        <div class="profile-info">
+                            <span class="profile-name" id="userName">Olá, </span>
+                            <span class="profile-role" id="userRole"></span>
+                        </div>
+                        <i class="ri-arrow-down-s-line dropdown-arrow"></i>
+                    </div>
+
+                    <!-- Profile Dropdown (separate from trigger) -->
+                    <div class="profile-dropdown" id="profileDropdown">
+                        <div class="dropdown-menu">
+                            <a href="#" class="dropdown-item" onclick="showSection('profile')">
+                                <i class="ri-user-line"></i>
+                                <span>Meu Perfil</span>
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item danger" id="logoutBtn">
+                                <i class="ri-logout-box-line"></i>
+                                <span>Sair</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Guest user actions -->
+                    <div class="guest-actions" id="guestActions" style="display: none;">
+                        <a href="/features/auth/login" class="btn btn-outline">
+                            <i class="ri-login-box-line"></i>
+                            <span>Entrar</span>
+                        </a>
+                        <a href="/features/auth/register" class="btn btn-primary">
+                            <i class="ri-user-add-line"></i>
+                            <span>Registrar</span>
+                        </a>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main Content Area -->
+            <div class="dashboard-content">
+                <!-- Dashboard Overview Section -->
+                <section class="dashboard-section active" id="dashboardSection">
+                    <div class="welcome-section">
+                        <h2 class="welcome-title" id="welcomeTitle">Bem-vindo ao TerraWatch</h2>
+                        <p class="welcome-subtitle" id="welcomeMsg">Explore os recursos disponíveis</p>
+                        <div class="user-status" id="userStatus">
+                            <span class="status-badge role" id="userRoleBadge" style="display: none;"></span>
+                            <span class="status-badge state" id="userStateBadge" style="display: none;"></span>
+                        </div>
+                    </div>
+
+                    <!-- Stats Grid -->
+                    <div class="stats-grid" id="statsGrid">
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <div class="stat-icon">
+                                    <i class="ri-file-list-3-line"></i>
+                                </div>
+                            </div>
+                            <div class="stat-content">
+                                <h3>Worksheets</h3>
+                                <div class="stat-value" id="worksheetsCount">-</div>
+                                <div class="stat-change">
+                                    <i class="ri-eye-line"></i>
+                                    <span>Ver todas</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <div class="stat-icon">
+                                    <i class="ri-user-line"></i>
+                                </div>
+                            </div>
+                            <div class="stat-content">
+                                <h3>Usuários</h3>
+                                <div class="stat-value" id="usersCount">-</div>
+                                <div class="stat-change">
+                                    <i class="ri-team-line"></i>
+                                    <span>Comunidade ativa</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <div class="stat-icon">
+                                    <i class="ri-map-pin-line"></i>
+                                </div>
+                                <div class="stat-actions">
+                                    <button class="btn-icon" onclick="refreshAreaStatistics()" title="Atualizar área total">
+                                        <i class="ri-refresh-line"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="stat-content">
+                                <h3>Área Total</h3>
+                                <div class="stat-value" id="totalArea">-</div>
+                                <div class="stat-change">
+                                    <i class="ri-global-line"></i>
+                                    <span>Hectares mapeados</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Map Preview -->
+                    <div class="dashboard-card map-preview-card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="ri-map-2-line"></i>
+                                Mapa das Propriedades
+                            </h3>
+                            <div class="card-actions">
+                                <button class="btn-icon" onclick="showSection('map')">
+                                    <i class="ri-fullscreen-line"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <div id="mapPreview" class="map-preview"></div>
+                            <div class="map-overlay">
+                                <button class="btn btn-primary" onclick="showSection('map')">
+                                    <i class="ri-map-2-line"></i>
+                                    Ver Mapa Completo
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Dashboard Grid -->
+                    <div class="dashboard-grid">
+                        <div class="dashboard-card">
+                            <div class="card-header">
+                                <h3 class="card-title">Feed Social</h3>
+                                <div class="card-actions">
+                                    <button class="btn-icon" onclick="handleRefreshSocialFeed()">
+                                        <i class="ri-refresh-line"></i>
+                                    </button>
+                                    <button class="btn-icon" onclick="showSection('socialfeed')" title="Ver Tudo">
+                                        <i class="ri-external-link-line"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <div class="activity-feed" id="socialFeed">
+                                    <!-- Social activities will be dynamically added here -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="dashboard-card">
+                            <div class="card-header">
+                                <h3 class="card-title">Projetos Ativos</h3>
+                                <div class="card-actions">
+                                    <button class="btn-icon" onclick="refreshActiveProjects()">
+                                        <i class="ri-refresh-line"></i>
+                                    </button>
+                                    <button class="btn-icon" onclick="showSection('worksheets')" title="Ver Worksheets">
+                                        <i class="ri-file-list-3-line"></i>
+                                    </button>
+                                    <button class="btn-icon" onclick="showSection('executionsheets')" title="Ver Execuções">
+                                        <i class="ri-clipboard-line"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <div class="active-projects-list" id="activeProjectsList">
+                                    <!-- Active projects (worksheets + execution sheets) will be dynamically added here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Worksheets Section -->
+                <section class="dashboard-section" id="worksheetsSection" style="display: none;">
+                    <div class="section-header">
+                        <h2 class="section-title">Worksheets</h2>
+                        <p class="section-subtitle">Gerencie todas as worksheets do sistema</p>
+                    </div>
+
+                    <!-- Worksheet Controls -->
+                    <div class="worksheets-controls">
+                        <div class="controls-left">
+                            <div class="search-box">
+                                <i class="ri-search-line"></i>
+                                <input type="text" placeholder="Pesquisar worksheets..." id="worksheetSearch">
+                            </div>
+                        </div>
+                        <div class="controls-right">
+                            <button class="btn btn-success" id="createWorksheetBtn">
+                                <i class="ri-add-line"></i>
+                                Nova Worksheet
+                            </button>
+                            <button class="btn btn-primary" id="refreshWorksheetsBtn">
+                                <i class="ri-refresh-line"></i>
+                                Atualizar
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Worksheets Grid -->
+                    <div class="worksheets-container">
+                        <div class="worksheets-grid" id="worksheetsGrid">
+                            <!-- Worksheets will be loaded dynamically -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- User Management Section -->
+                <section class="dashboard-section" id="usersSection" style="display: none;">
+                    <div class="section-header">
+                        <h2 class="section-title">Gestão de Usuários</h2>
+                        <p class="section-subtitle">Gerencie todos os usuários do sistema</p>
+                    </div>
+
+                    <!-- User Stats -->
+                    <div class="users-stats">
+                        <div class="stat-item">
+                            <div class="stat-icon success">
+                                <i class="ri-user-check-line"></i>
+                            </div>
+                            <div class="stat-details">
+                                <div class="stat-value" id="activeUsersCount">0</div>
+                                <div class="stat-label">Usuários Ativos</div>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-icon warning">
+                                <i class="ri-user-unfollow-line"></i>
+                            </div>
+                            <div class="stat-details">
+                                <div class="stat-value" id="inactiveUsersCount">0</div>
+                                <div class="stat-label">Usuários Inativos</div>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-icon">
+                                <i class="ri-team-line"></i>
+                            </div>
+                            <div class="stat-details">
+                                <div class="stat-value" id="totalUsersCount">0</div>
+                                <div class="stat-label">Total de Usuários</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- User Controls -->
+                    <div class="users-controls">
+                        <div class="controls-left">
+                            <div class="search-box">
+                                <i class="ri-search-line"></i>
+                                <input type="text" placeholder="Pesquisar usuários..." id="userSearch">
+                            </div>
+                            <select id="roleFilter" class="form-control">
+                                <option value="">Todas as Roles</option>
+                                <option value="SYSADMIN">Administrador</option>
+                                <option value="SYSBO">Sistema Back Office</option>
+                                <option value="SMBO">Gestor de Folhas</option>
+                                <option value="SGVBO">Visualizador Geral</option>
+                                <option value="SDVBO">Visualizador Detalhado</option>
+                                <option value="PRBO">Representante Parceiro</option>
+                                <option value="PO">Operador Parceiro</option>
+                                <option value="ADLU">Proprietário Aderente</option>
+                                <option value="RU">Usuário Registrado</option>
+                            </select>
+                            <select id="stateFilter" class="form-control">
+                                <option value="">Todos os Estados</option>
+                                <option value="ATIVADO">Ativo</option>
+                                <option value="DESATIVADO">Inativo</option>
+                                <option value="SUSPENSO">Suspenso</option>
+                                <option value="P-REMOVER">Pendente Remoção</option>
+                            </select>
+                        </div>
+                        <div class="controls-right">
+                            <button class="btn btn-primary" onclick="refreshUsersList()">
+                                <i class="ri-refresh-line"></i>
+                                Atualizar
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Users Table -->
+                    <div class="users-table-container">
+                        <div class="table-responsive">
+                            <table class="table users-table" id="usersTable">
+                                <thead>
+                                    <tr>
+                                        <th>Usuário</th>
+                                        <th>Role</th>
+                                        <th>Estado</th>
+                                        <th>Última Atividade</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="usersTableBody">
+                                    <!-- Users will be loaded dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div id="adminContent" class="admin-content"></div>
+                </section>
+
+                <!-- ExecutionSheets Management Section -->
+                <section class="dashboard-section" id="executionsheetsSection" style="display: none;">
+                    <div class="section-header">
+                        <h2 class="section-title">Folhas de Execução</h2>
+                        <p class="section-subtitle">Gerencie as folhas de execução do sistema</p>
+                    </div>
+
+                    <div class="quick-actions">
+                        <button id="createExecutionSheetBtn" class="action-btn primary">
+                            <i class="ri-add-line"></i>
+                            Criar Folha de Execução
+                        </button>
+                        <button id="refreshExecutionSheetsBtn" class="action-btn">
+                            <i class="ri-refresh-line"></i>
+                            Atualizar Lista
+                        </button>
+                    </div>
+
+                    <!-- ExecutionSheets List -->
+                    <div class="executionsheets-grid" id="executionSheetsGrid">
+                        <!-- ExecutionSheets will be loaded dynamically -->
+                    </div>
+
+                    <div id="executionSheetContent" class="execution-sheet-content"></div>
+                </section>
+
+                <!-- Map Section -->
+                <section class="dashboard-section" id="mapSection" style="display: none;">
+                    <div class="section-header">
+                        <h2 class="section-title">Mapa Interativo</h2>
+                        <p class="section-subtitle">Visualize e gerencie áreas no mapa</p>
+                    </div>
+
+                    <!-- Map Filters -->
+                    <div class="map-filters">
+                        <div class="filter-group">
+                            <label>Tipo de Mapa:</label>
+                            <select id="mapTypeSelect" class="form-control">
+                                <option value="roadmap" selected>Rodoviário</option>
+                                <option value="satellite">Satélite</option>
+                                <option value="hybrid">Híbrido</option>
+                                <option value="terrain">Terreno</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <button class="btn btn-outline" onclick="toggleWorksheetPanel()"
+                                title="Mostrar/Ocultar Lista de Worksheets">
+                                <i class="ri-list-check"></i>
+                                Lista de Worksheets
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="map" class="map-container"></div>
+                </section>
+
+                <!-- Public Information Section (for guests) -->
+                <section class="dashboard-section" id="publicInfoSection" style="display: none;">
+                    <div class="section-header">
+                        <h2 class="section-title">Informações Públicas</h2>
+                        <p class="section-subtitle">Dados públicos sobre o TerraWatch</p>
+                    </div>
+
+                    <div class="public-stats">
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="ri-map-2-line"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3>Terrenos Cadastrados</h3>
+                                <div class="stat-value" id="publicTerrenosCount">-</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <div class="stat-icon">
+                                    <i class="ri-ruler-line"></i>
+                                </div>
+                                <div class="stat-actions">
+                                    <button class="btn-icon" onclick="refreshAreaStatistics()" title="Atualizar área total">
+                                        <i class="ri-refresh-line"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="stat-content">
+                                <h3>Área Total</h3>
+                                <div class="stat-value" id="publicAreaTotal">- ha</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="public-info-content">
+                        <div class="info-card">
+                            <h3>Sobre o TerraWatch</h3>
+                            <p>O TerraWatch é uma plataforma de gestão e monitoramento de terrenos que permite aos
+                                proprietários e gestores acompanhar suas propriedades de forma eficiente e sustentável.
+                            </p>
+                        </div>
+                        <div class="info-card">
+                            <h3>Como Participar</h3>
+                            <p>Para começar a usar o TerraWatch, você pode se registrar como usuário e, dependendo do
+                                seu perfil, ter acesso a diferentes funcionalidades da plataforma.</p>
+                            <div class="cta-buttons">
+                                <a href="/features/auth/register" class="btn btn-primary">
+                                    <i class="ri-user-add-line"></i>
+                                    Criar Conta
+                                </a>
+                                <a href="/features/auth/login" class="btn btn-outline">
+                                    <i class="ri-login-box-line"></i>
+                                    Entrar
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Social Feed Section -->
+                <section class="dashboard-section" id="socialfeedSection" style="display: none;">
+                    <div class="section-header">
+                        <h2 class="section-title">Feed Social</h2>
+                        <p class="section-subtitle">Acompanhe todas as atividades, fotos e interações da comunidade</p>
+                    </div>
+
+                    <!-- Social Feed Controls -->
+                    <div class="social-controls">
+                        <div class="controls-left">
+                            <div class="filter-tabs">
+                                <button class="filter-tab active" data-filter="all">
+                                    <i class="ri-global-line"></i>
+                                    Todas
+                                </button>
+                                <button class="filter-tab" data-filter="photos">
+                                    <i class="ri-image-line"></i>
+                                    Mídia
+                                </button>
+                                <button class="filter-tab" data-filter="activities">
+                                    <i class="ri-notification-3-line"></i>
+                                    Atividades
+                                </button>
+                                <button class="filter-tab" data-filter="likes">
+                                    <i class="ri-heart-line"></i>
+                                    Curtidas
+                                </button>
+                            </div>
+                        </div>
+                        <div class="controls-right">
+                            <button class="btn btn-success" onclick="showPostingModal()">
+                                <i class="ri-add-circle-line"></i>
+                                Postar
+                            </button>
+
+                            <button class="btn btn-primary" onclick="refreshFullSocialFeed()">
+                                <i class="ri-refresh-line"></i>
+                                Atualizar
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Social Feed Content -->
+                    <div class="social-feed-container">
+                        <div class="social-feed-grid" id="fullSocialFeed">
+                            <!-- Full social feed will be loaded here -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Profile Section -->
+                <section class="dashboard-section" id="profileSection" style="display: none;">
+                    <div class="section-header">
+                        <h2 class="section-title">Meu Perfil</h2>
+                        <p class="section-subtitle">Gerencie suas informações pessoais</p>
+                    </div>
+
+                    <div class="profile-grid">
+                        <div class="profile-card">
+                            <div class="profile-overview">
+                                <div class="profile-avatar-large" id="profileAvatar"></div>
+                                <div class="profile-details">
+                                    <h2 class="profile-name" id="profileName"></h2>
+                                    <p class="profile-email" id="profileEmail"></p>
+                                    <div class="profile-badges">
+                                        <span class="badge role" id="profileRole"></span>
+                                        <span class="badge state" id="profileState"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="profile-card">
+                            <div class="card-header">
+                                <h3 class="card-title">Informações Pessoais</h3>
+                            </div>
+                            <div class="card-content">
+                                <form id="updateProfileForm" class="profile-form">
+                                    <!-- Form fields will be dynamically added here -->
+                                </form>
+                            </div>
+                        </div>
+
+                        <div class="profile-card">
+                            <div class="card-header">
+                                <h3 class="card-title">Segurança</h3>
+                            </div>
+                            <div class="card-content">
+                                <div class="security-actions">
+                                    <button id="changePasswordBtn" class="action-btn">
+                                        <i class="ri-lock-password-line"></i>
+                                        Alterar Senha
+                                    </button>
+                                    <button id="togglePrivacyBtn" class="action-btn">
+                                        <i class="ri-shield-keyhole-line"></i>
+                                        Alterar Privacidade
+                                    </button>
+                                    <button id="requestRemovalBtn" class="action-btn">
+                                        <i class="ri-delete-bin-line"></i>
+                                        Solicitar Remoção
+                                    </button>
+                                </div>
+
+                                <form id="changePasswordForm" class="password-form" style="display: none;">
+                                    <!-- Password change form will be dynamically added here -->
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Detail Modal -->
+    <div id="userDetailModal" class="user-management-modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="userDetailTitle">Detalhes do Usuário</h2>
+                <button class="modal-close" onclick="closeUserDetailModal()">
+                    <i class="ri-close-line"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="userDetailContent">
+                <!-- User details will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- User Edit Modal -->
+    <div id="userEditModal" class="user-management-modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="userEditTitle">Editar Usuário</h2>
+                <button class="modal-close" onclick="closeUserEditModal()">
+                    <i class="ri-close-line"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="userEditForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="editUsername">Username</label>
+                            <input type="text" id="editUsername" class="form-control" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="editName">Nome</label>
+                            <input type="text" id="editName" class="form-control" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="editEmail">Email</label>
+                            <input type="email" id="editEmail" class="form-control" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="editRole">Role</label>
+                            <select id="editRole" class="form-control">
+                                <option value="SYSADMIN">Administrador</option>
+                                <option value="SYSBO">Sistema Back Office</option>
+                                <option value="SMBO">Gestor de Folhas</option>
+                                <option value="SGVBO">Visualizador Geral</option>
+                                <option value="SDVBO">Visualizador Detalhado</option>
+                                <option value="PRBO">Representante Parceiro</option>
+                                <option value="PO">Operador Parceiro</option>
+                                <option value="ADLU">Proprietário Aderente</option>
+                                <option value="RU">Usuário Registrado</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="editState">Estado</label>
+                            <select id="editState" class="form-control">
+                                <option value="ATIVADO">Ativo</option>
+                                <option value="DESATIVADO">Inativo</option>
+                                <option value="SUSPENSO">Suspenso</option>
+                                <option value="P-REMOVER">Pendente Remoção</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="editProfile">Perfil</label>
+                            <input type="text" id="editProfile" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="editPhone1">Telefone 1</label>
+                            <input type="tel" id="editPhone1" class="form-control" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="editPhone2">Telefone 2</label>
+                            <input type="tel" id="editPhone2" class="form-control" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="editEnd">Morada</label>
+                            <input type="text" id="editEnd" class="form-control" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="editEndcp">Código Postal</label>
+                            <input type="text" id="editEndcp" class="form-control" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="editNif">NIF</label>
+                            <input type="text" id="editNif" class="form-control" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="editCc">Cartão de Cidadão</label>
+                            <input type="text" id="editCc" class="form-control" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="editCcde">Data de Emissão CC</label>
+                            <input type="text" id="editCcde" class="form-control" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="editCcle">Local de Emissão CC</label>
+                            <input type="text" id="editCcle" class="form-control" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="editCcv">Validade CC</label>
+                            <input type="text" id="editCcv" class="form-control" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="editDnasc">Data de Nascimento</label>
+                            <input type="text" id="editDnasc" class="form-control" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="editPn">País de Nacionalidade</label>
+                            <input type="text" id="editPn" class="form-control" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="editPr">País de Residência</label>
+                            <input type="text" id="editPr" class="form-control" readonly>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-outline" onclick="closeUserEditModal()">
+                            Cancelar
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="ri-save-line"></i>
+                            Salvar Alterações
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Posting Modal -->
+    <div id="postingModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Criar Nova Postagem</h2>
+                <button class="modal-close" onclick="closePostingModal()">
+                    <i class="ri-close-line"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="postingForm">
+                    <!-- Execution Sheet Selection -->
+                    <div class="form-group">
+                        <label for="postExecutionSheet">Selecionar Folha de Execução:</label>
+                        <select id="postExecutionSheet" class="form-control" required>
+                            <option value="">Carregando folhas de execução...</option>
+                        </select>
+                    </div>
+
+                    <!-- Post Type Selection -->
+                    <div class="form-group">
+                        <label>Tipo de Postagem:</label>
+                        <div class="post-type-buttons">
+                            <button type="button" class="post-type-btn active" data-type="text" onclick="selectPostType('text')">
+                                <i class="ri-chat-1-line"></i>
+                                Texto
+                            </button>
+                            <button type="button" class="post-type-btn" data-type="media" onclick="selectPostType('media')">
+                                <i class="ri-camera-line"></i>
+                                Mídia
+                            </button>
+                            <button type="button" class="post-type-btn" data-type="activity" onclick="selectPostType('activity')">
+                                <i class="ri-tools-line"></i>
+                                Atividade
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Text Content -->
+                    <div id="textPostSection" class="form-group">
+                        <label for="postContent">Conteúdo da Postagem:</label>
+                        <textarea id="postContent" class="form-control" rows="4" placeholder="Escreva sua atualização aqui..." required></textarea>
+                    </div>
+
+                    <!-- Media Upload Section -->
+                    <div id="mediaPostSection" class="form-group" style="display: none;">
+                        <label for="postMediaInput">Selecionar Mídia:</label>
+                        <input type="file" id="postMediaInput" class="form-control" accept="image/*,video/*" multiple>
+                        <div class="form-help">Formatos suportados: JPG, PNG, MP4, MOV, AVI</div>
+                        
+                        <label for="postMediaDescription" style="margin-top: 1rem;">Descrição da Mídia:</label>
+                        <textarea id="postMediaDescription" class="form-control" rows="3" placeholder="Descreva sua mídia..." required></textarea>
+                    </div>
+
+                    <!-- Activity Section -->
+                    <div id="activityPostSection" class="form-group" style="display: none;">
+                        <label for="postActivityOperation">Selecionar Operação:</label>
+                        <select id="postActivityOperation" class="form-control" required>
+                            <option value="">Carregando operações...</option>
+                        </select>
+                        
+                        <label for="postActivityProgress" style="margin-top: 1rem;">Progresso da Atividade:</label>
+                        <div class="progress-container">
+                            <div class="progress-slider">
+                                <input type="range" id="postActivityProgress" min="0" max="100" value="0" class="progress-range">
+                                <div class="progress-display">
+                                    <span id="progressValue">0%</span>
+                                    <span id="areaValue" class="area-display">(0 ha)</span>
+                                </div>
+                            </div>
+                            <div class="progress-help">
+                                <small>Deslize para indicar o progresso desta atividade específica (0-100%) - A área será calculada automaticamente</small>
+                            </div>
+                        </div>
+                        
+                        <label for="postActivityContent" style="margin-top: 1rem;">Descrição da Atividade (opcional):</label>
+                        <textarea id="postActivityContent" class="form-control" rows="3" placeholder="Descreva a atividade realizada..."></textarea>
+                        
+                        <label for="postActivityMedia" style="margin-top: 1rem;">Mídia da Atividade (opcional):</label>
+                        <input type="file" id="postActivityMedia" class="form-control" accept="image/*,video/*" multiple>
+                        <div class="form-help">Adicione fotos ou vídeos da atividade realizada</div>
+                    </div>
+
+                    <!-- Submit Buttons -->
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-outline" onclick="closePostingModal()">
+                            Cancelar
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="ri-send-plane-fill"></i>
+                            Publicar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loader" class="loading-overlay" style="display: none;">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <div class="loading-message">Carregando...</div>
+        </div>
+    </div>
+
+    <script src="/shared/js/common.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/admin-handlers.js"></script>
+    <script src="js/operator-handlers.js"></script>
+    <script src="js/execution-sheet-handlers.js"></script>
+    <script src="js/notifications-handler.js"></script>
+    <script src="js/user-handlers.js"></script>
+</body>
+
+</html>

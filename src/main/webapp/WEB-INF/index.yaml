@@ -1,0 +1,53 @@
+indexes:
+
+- kind: UserLog
+  ancestor: yes
+  properties:
+  - name: user_login_time
+
+- kind: UserLog
+  ancestor: yes
+  properties:
+  - name: user_login_time
+    direction: desc
+
+# Worksheet related indexes
+- kind: WorksheetOperation
+  properties:
+  - name: worksheetId
+
+- kind: WorksheetProperty
+  properties:
+  - name: worksheetWorkId
+
+# Execution Sheet related indexes
+- kind: ExecutionOperation
+  properties:
+  - name: executionId
+
+- kind: ExecutionParcel
+  properties:
+  - name: operationId
+
+- kind: ExecutionActivity
+  properties:
+  - name: parcelId
+
+# Social feature indexes
+- kind: ExecutionSheetLike
+  properties:
+  - name: executionSheetId
+  - name: likedAt
+    direction: desc
+
+- kind: ExecutionSheetComment
+  properties:
+  - name: executionSheetId
+  - name: timestamp
+    direction: desc
+
+- kind: ActivityPhoto
+  properties:
+  - name: activityId
+  - name: uploadedAt
+    direction: desc

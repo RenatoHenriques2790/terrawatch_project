@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TerraWatch - Redefinir Senha</title>
+    <link rel="stylesheet" href="/shared/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="auth-page">
+    <div class="auth-container">
+        <div class="auth-card">
+            <a href="/" class="auth-logo-link">
+                <img src="/shared/img/logo-icon.png" alt="TerraWatch Logo" class="auth-logo">
+                <span class="auth-logo-text">TerraWatch</span>
+            </a>
+            <h1>Redefinir Senha</h1>
+            <p class="auth-subtitle">Digite sua nova senha</p>
+
+            <form id="resetForm" class="auth-form">
+                <div class="form-group">
+                    <label for="password">Nova Senha</label>
+                    <div class="password-input">
+                        <input type="password" id="password" name="password" required 
+                               class="form-control" autocomplete="new-password">
+                        <button type="button" class="toggle-password" onclick="togglePassword('password')">
+                            👁️
+                        </button>
+                    </div>
+                    <div class="password-requirements">
+                        <p>A senha deve conter:</p>
+                        <ul>
+                            <li id="length">Mínimo de 8 caracteres</li>
+                            <li id="uppercase">Uma letra maiúscula</li>
+                            <li id="lowercase">Uma letra minúscula</li>
+                            <li id="number">Um número</li>
+                            <li id="special">Um caractere especial</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="confirmPassword">Confirmar Nova Senha</label>
+                    <div class="password-input">
+                        <input type="password" id="confirmPassword" name="confirmPassword" required 
+                               class="form-control" autocomplete="new-password">
+                        <button type="button" class="toggle-password" onclick="togglePassword('confirmPassword')">
+                            👁️
+                        </button>
+                    </div>
+                </div>
+                <div id="resetAlert" class="alert" style="display: none;"></div>
+                <button type="submit" class="btn btn-primary btn-block">Redefinir Senha</button>
+            </form>
+
+            <div class="auth-footer">
+                <p>Lembrou sua senha? <a href="/features/auth/login">Voltar ao Login</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="/shared/js/common.js"></script>
+    <script>
+        // Get token from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get('token');
+
+        if (!token) {
+            window.location.href = '/features/auth/login';
+        }
+
+        document.getElementById('resetForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            ui.showLoading(true);
+
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (password !== confirmPassword) {
+                showAlert('As senhas não coincidem', 'error');
+                ui.showLoading(false);
+                return;
+            }
+
+            if (!validatePassword(password)) {
+                showAlert('A senha não atende aos requisitos mínimos', 'error');
+                ui.showLoading(false);
+                return;
+            }
+
+            try {
+                const response = await fetch('/rest/auth/reset-password', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ token, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showAlert('Senha redefinida com sucesso! Redirecionando...', 'success');
+                    setTimeout(() => {
+                        window.location.href = '/features/auth/login';
+                    }, 2000);
+                } else {
+                    showAlert(data.message || 'Erro ao redefinir senha', 'error');
+                }
+            } catch (error) {
+                showAlert('Erro ao conectar com o servidor', 'error');
+                console.error('Reset password error:', error);
+            } finally {
+                ui.showLoading(false);
+            }
+        });
+
+        function showAlert(message, type) {
+            const alert = document.getElementById('resetAlert');
+            alert.textContent = message;
+            alert.className = `alert alert-${type}`;
+            alert.style.display = 'block';
+        }
+
+        function togglePassword(inputId) {
+            const input = document.getElementById(inputId);
+            input.type = input.type === 'password' ? 'text' : 'password';
+        }
+
+        // Password validation
+        const password = document.getElementById('password');
+        password.addEventListener('input', validatePasswordRequirements);
+
+        function validatePasswordRequirements() {
+            const value = password.value;
+            
+            // Update requirements list
+            document.getElementById('length').classList.toggle('valid', value.length >= 8);
+            document.getElementById('uppercase').classList.toggle('valid', /[A-Z]/.test(value));
+            document.getElementById('lowercase').classList.toggle('valid', /[a-z]/.test(value));
+            document.getElementById('number').classList.toggle('valid', /[0-9]/.test(value));
+            document.getElementById('special').classList.toggle('valid', /[!@#$%^&*(),.?":{}|<>]/.test(value));
+        }
+
+        function validatePassword(password) {
+            const requirements = [
+                password.length >= 8,
+                /[A-Z]/.test(password),
+                /[a-z]/.test(password),
+                /[0-9]/.test(password),
+                /[!@#$%^&*(),.?":{}|<>]/.test(password)
+            ];
+
+            return requirements.every(req => req);
+        }
+    </script>
+</body>
+</html> 

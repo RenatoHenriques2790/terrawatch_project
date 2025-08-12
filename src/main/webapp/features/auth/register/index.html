@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criar Conta - TerraWatch</title>
+    <link rel="stylesheet" href="/shared/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <style>
+        .step {
+            display: none;
+            opacity: 0;
+            transform: translateX(20px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        .step.active {
+            display: block;
+            opacity: 1;
+            transform: translateX(0);
+        }
+        .step.exit {
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+
+        
+        .account-type-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #9EF5CF 0%, #7ad4ae 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 0;
+        }
+        
+        .account-type-btn:hover {
+            border-color: #9EF5CF;
+            background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(158, 245, 207, 0.25);
+        }
+        
+        .account-type-btn:hover::before {
+            opacity: 0.05;
+        }
+        
+        .account-type-btn:active {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(158, 245, 207, 0.3);
+        }
+        
+        .account-type-btn h3 {
+            margin: 0 0 0.5rem 0;
+            color: #1a202c;
+            font-weight: 600;
+            font-size: 1.1rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .account-type-btn p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: #4a5568;
+            line-height: 1.5;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .account-type-btn:focus {
+            outline: none;
+            border-color: #9EF5CF;
+            box-shadow: 0 0 0 3px rgba(158, 245, 207, 0.3);
+        }
+        
+        /* Container para os botões com espaçamento melhorado */
+        .account-type-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+        
+        /* Layout dos botões com ícones */
+        .account-type-btn {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            width: 100%;
+            padding: 1.5rem;
+            margin: 0.75rem 0;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+        }
+        
+        .account-type-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #9EF5CF 0%, #7ad4ae 100%);
+            color: #1a202c;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .account-type-content {
+            flex: 1;
+        }
+        
+        /* Estado selecionado dos botões */
+        .account-type-btn.selected {
+            border-color: #9EF5CF;
+            background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+            box-shadow: 0 4px 15px rgba(158, 245, 207, 0.3);
+        }
+        
+        .account-type-btn.selected .account-type-icon {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            color: white;
+        }
+        
+        /* Animação de entrada dos botões */
+        .account-type-btn {
+            animation: fadeInUp 0.6s ease forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        
+        .account-type-btn:nth-child(1) { animation-delay: 0.1s; }
+        .account-type-btn:nth-child(2) { animation-delay: 0.2s; }
+        .account-type-btn:nth-child(3) { animation-delay: 0.3s; }
+        
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Melhorias adicionais para responsividade */
+        @media (max-width: 640px) {
+            .account-type-btn {
+                padding: 1.25rem;
+                margin: 0.5rem 0;
+            }
+            
+            .account-type-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 1.25rem;
+            }
+            
+            .account-type-btn h3 {
+                font-size: 1rem;
+            }
+            
+            .account-type-btn p {
+                font-size: 0.85rem;
+            }
+        }
+        .progress-bar-container {
+            width: 100%;
+            height: 6px;
+            background: #eee;
+            border-radius: 3px;
+            margin: 2rem 0;
+            overflow: hidden;
+        }
+        .progress-bar {
+            width: 50%;
+            height: 100%;
+            background: #9EF5CF;
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+        .back-button {
+            position: static;
+            display: block;
+            margin: 1rem 0 1.5rem 0; 
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+            padding: 0.5rem 0;
+            transition: transform 0.2s ease;
+        }
+        .back-button:hover {
+            transform: translateX(-3px);
+            color: #9EF5CF;
+        }
+        .divider {
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(to right, #9EF5CF, #6a836d);
+            margin: 2rem 0;
+            border-radius: 1px;
+        }
+        .optional-section {
+            margin-top: 1rem;
+        }
+        .optional-toggle {
+            width: 100%;
+            padding: 1rem;
+            background: none;
+            border: 1px dashed #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: #666;
+            transition: all 0.3s ease;
+        }
+        .optional-toggle:hover {
+            background: #f9f9f9;
+            border-color: #9EF5CF;
+            color: #9EF5CF;
+        }
+        .optional-content {
+            display: none;
+            padding-top: 1rem;
+        }
+        .optional-content.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .form-section {
+            margin-bottom: 2rem;
+        }
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+    </style>
+</head>
+<body class="auth-page">
+    <div class="auth-container">
+        <div class="auth-card">
+            
+            <a href="/" class="auth-logo-link">
+                <img src="/shared/img/logo-icon.png" alt="TerraWatch Logo" class="auth-logo">
+                <span class="auth-logo-text">TerraWatch</span>
+            </a>
+            <h1>Criar Conta</h1>
+            <p class="auth-subtitle">Junte-se à comunidade TerraWatch</p>
+
+            <div class="progress-bar-container">
+                <div class="progress-bar"></div>
+            </div>
+
+            <button type="button" id="backBtn" class="back-button" style="display: none;">←</button>
+
+            <form id="registerForm" class="auth-form">
+                <!-- Step 1: Account Type Selection -->
+                <div id="step1" class="step active">
+                    <h2>Selecione o Tipo de Conta</h2>
+                    <div class="account-type-container">
+                        <button type="button" class="account-type-btn" data-type="RU">
+                            <div class="account-type-icon">
+                                <i class="ri-user-line"></i>
+                            </div>
+                            <div class="account-type-content">
+                                <h3>Usuário Comum (RU)</h3>
+                                <p>Para usuários que desejam acessar funcionalidades básicas</p>
+                            </div>
+                        </button>
+                        <button type="button" class="account-type-btn" data-type="ADLU">
+                            <div class="account-type-icon">
+                                <i class="ri-home-line"></i>
+                            </div>
+                            <div class="account-type-content">
+                                <h3>Proprietário de Terreno (ADLU)</h3>
+                                <p>Para proprietários de terrenos que desejam gerenciar suas propriedades</p>
+                            </div>
+                        </button>
+                        <button type="button" class="account-type-btn" data-type="PO">
+                            <div class="account-type-icon">
+                                <i class="ri-building-line"></i>
+                            </div>
+                            <div class="account-type-content">
+                                <h3>Operador Parceiro (PO)</h3>
+                                <p>Para operadores que trabalham em nome de empresas parceiras</p>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 2: Registration Form -->
+                <div id="step2" class="step">
+                    <div class="form-section">
+                        <div class="form-group">
+                            <label for="username">Nome de Usuário <span class="required">*</span></label>
+                            <input type="text" id="username" name="username" required class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="name">Nome Completo <span class="required po-required">*</span></label>
+                            <input type="text" id="name" name="name" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email <span class="required">*</span></label>
+                            <input type="email" id="email" name="email" required class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Senha <span class="required">*</span></label>
+                            <div class="password-input">
+                                <input type="password" id="password" name="password" required class="form-control">
+                                <button type="button" class="toggle-password" onclick="togglePassword('password')">👁️</button>
+                            </div>
+                            <small class="password-requirements">
+                                A senha deve ter no mínimo 8 caracteres, incluindo letras maiúsculas, 
+                                minúsculas e números
+                            </small>
+                        </div>
+                        <div class="form-group">
+                            <label for="confirmPassword">Confirmar Senha <span class="required">*</span></label>
+                            <div class="password-input">
+                                <input type="password" id="confirmPassword" name="confirmPassword" required class="form-control">
+                                <button type="button" class="toggle-password" onclick="togglePassword('confirmPassword')">👁️</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="divider"></div>
+
+                    <!-- PO Required Fields -->
+                    <div id="poRequiredFields" style="display: none;">
+                        <div class="form-group">
+                            <label for="partner">Empresa/Organização <span class="required">*</span></label>
+                            <input type="text" id="partner" name="partner" required class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="phone1">Telefone Principal <span class="required">*</span></label>
+                            <input type="tel" id="phone1" name="phone1" required class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="phone2">Telefone Alternativo</label>
+                            <input type="tel" id="phone2" name="phone2" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="nif">NIF</label>
+                            <input type="text" id="nif" name="nif" class="form-control">
+                        </div>
+                    </div>
+
+                    <!-- Optional Fields for ADLU, RU, and PO -->
+                    <div id="optionalFields" style="display: none;">
+                        <button type="button" class="optional-toggle" onclick="toggleOptionalFields()">
+                            <span>Informações Adicionais (Opcional)</span>
+                            <span class="toggle-icon">▼</span>
+                        </button>
+                        <div class="optional-content">
+                            <!-- ADLU/RU Optional Fields -->
+                            <div id="adluFields">
+                                <div class="form-group">
+                                    <label for="pn">País de Nacionalidade</label>
+                                    <input type="text" id="pn" name="pn" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="pr">País de Residência</label>
+                                    <input type="text" id="pr" name="pr" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="end">Morada</label>
+                                    <input type="text" id="end" name="end" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="endcp">Código Postal</label>
+                                    <input type="text" id="endcp" name="endcp" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="phone1_opt">Telefone</label>
+                                    <input type="tel" id="phone1_opt" name="phone1" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="phone2_opt">Telefone Secundário</label>
+                                    <input type="tel" id="phone2_opt" name="phone2" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="nif_opt">NIF</label>
+                                    <input type="text" id="nif_opt" name="nif" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="cc">Cartão de Cidadão</label>
+                                    <input type="text" id="cc" name="cc" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="ccde">Data de Emissão do CC</label>
+                                    <input type="date" id="ccde" name="ccde" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="ccle">Local de Emissão do CC</label>
+                                    <input type="text" id="ccle" name="ccle" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="ccv">Validade do CC</label>
+                                    <input type="date" id="ccv" name="ccv" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="dnasc">Data de Nascimento</label>
+                                    <input type="date" id="dnasc" name="dnasc" class="form-control">
+                                </div>
+                            </div>
+                            <!-- PO Optional Fields (apenas os que não estão em PORequiredFields) -->
+                            <div id="poOptionalFields" style="display: none;">
+                                <div class="form-group">
+                                    <label for="pn_po">País de Nacionalidade</label>
+                                    <input type="text" id="pn_po" name="pn" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="pr_po">País de Residência</label>
+                                    <input type="text" id="pr_po" name="pr" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="end_po">Morada</label>
+                                    <input type="text" id="end_po" name="end" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="endcp_po">Código Postal</label>
+                                    <input type="text" id="endcp_po" name="endcp" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="cc_po">Cartão de Cidadão</label>
+                                    <input type="text" id="cc_po" name="cc" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="ccde_po">Data de Emissão do CC</label>
+                                    <input type="date" id="ccde_po" name="ccde" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="ccle_po">Local de Emissão do CC</label>
+                                    <input type="text" id="ccle_po" name="ccle" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="ccv_po">Validade do CC</label>
+                                    <input type="date" id="ccv_po" name="ccv" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="dnasc_po">Data de Nascimento</label>
+                                    <input type="date" id="dnasc_po" name="dnasc" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-top: 2rem;">
+                        <label class="checkbox-label terms">
+                            <input type="checkbox" id="terms" name="terms" required>
+                            <span>Eu concordo com os <a href="#">Termos de Uso</a> e <a href="#">Política de Privacidade</a></span>
+                        </label>
+                    </div>
+
+                    <div id="registerAlert" class="alert" style="display: none; margin: 1rem 0;"></div>
+
+                    <button type="submit" class="btn btn-primary btn-large" style="width: 100%;">
+                        Criar Conta
+                    </button>
+
+                    <p class="auth-footer">
+                        Já tem uma conta? <a href="/features/auth/login">Entrar</a>
+                    </p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="loader" class="loader-overlay" style="display: none;">
+        <div class="loader"></div>
+    </div>
+
+    <script src="/shared/js/common.js"></script>
+    <script>
+        let selectedRole = null;
+        const progressBar = document.querySelector('.progress-bar');
+        const backBtn = document.getElementById('backBtn');
+
+        function showStep(step, direction = 'forward') {
+            const currentStep = document.querySelector('.step.active');
+            const targetStep = document.getElementById(`step${step}`);
+            
+            if (currentStep) {
+                currentStep.classList.add('exit');
+                setTimeout(() => {
+                    currentStep.classList.remove('active', 'exit');
+                }, 300);
+            }
+
+            setTimeout(() => {
+                targetStep.classList.add('active');
+                progressBar.style.width = step === 1 ? '50%' : '100%';
+                backBtn.style.display = step === 1 ? 'none' : 'block';
+
+                if (selectedRole === 'PO') {
+                    document.getElementById('poRequiredFields').style.display = 'block';
+                    optionalFields.style.display = 'block';
+                    adluFields.style.display = 'none';
+                    poOptionalFields.style.display = 'block';
+                    document.querySelector('.po-required').style.display = 'inline';
+                    document.getElementById('name').required = true;
+
+                    // PO required fields
+                    document.getElementById('partner').required = true;
+                    document.getElementById('phone1').required = true;
+                    // Remover required dos campos opcionais
+                    document.getElementById('phone2').required = false;
+                    document.getElementById('nif').required = false;
+                } else {
+                    document.getElementById('poRequiredFields').style.display = 'none';
+                    optionalFields.style.display = 'block';
+                    adluFields.style.display = 'block';
+                    poOptionalFields.style.display = 'none';
+                    document.querySelector('.po-required').style.display = 'none';
+                    document.getElementById('name').required = false;
+
+                    // Remove required from PO fields
+                    document.getElementById('partner').required = false;
+                    document.getElementById('phone1').required = false;
+                    document.getElementById('phone2').required = false;
+                    document.getElementById('nif').required = false;
+                }
+            }, 300);
+        }
+
+        function togglePassword(inputId) {
+            const input = document.getElementById(inputId);
+            input.type = input.type === 'password' ? 'text' : 'password';
+        }
+
+        function toggleOptionalFields() {
+            const content = document.querySelector('.optional-content');
+            const icon = document.querySelector('.toggle-icon');
+            content.classList.toggle('show');
+            icon.textContent = content.classList.contains('show') ? '▲' : '▼';
+        }
+
+        function showAlert(message, type) {
+            const alert = document.getElementById('registerAlert');
+            alert.textContent = message;
+            alert.className = `alert alert-${type}`;
+            alert.style.display = 'block';
+        }
+
+        // Handle account type selection
+        document.querySelectorAll('.account-type-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Remove selected class from all buttons
+                document.querySelectorAll('.account-type-btn').forEach(b => b.classList.remove('selected'));
+                // Add selected class to clicked button
+                btn.classList.add('selected');
+                selectedRole = btn.dataset.type;
+                showStep(2);
+            });
+        });
+
+        // Handle back button
+        backBtn.addEventListener('click', () => {
+            showStep(1, 'back');
+        });
+
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const loader = document.getElementById('loader');
+            
+            // Validate password
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const terms = document.getElementById('terms').checked;
+
+            if (password !== confirmPassword) {
+                showAlert('As senhas não coincidem', 'error');
+                return;
+            }
+
+            if (password.length < 8 || !/[A-Z]/.test(password) || 
+                !/[a-z]/.test(password) || !/[0-9]/.test(password)) {
+                showAlert('A senha não atende aos requisitos mínimos', 'error');
+                return;
+            }
+
+            if (!terms) {
+                showAlert('Você precisa aceitar os termos de uso', 'error');
+                return;
+            }
+
+            // Collect form data based on account type
+            const formData = {
+                username: document.getElementById('username').value,
+                email: document.getElementById('email').value,
+                password: password,
+                confirmation: confirmPassword,
+                role: selectedRole,
+                name: document.getElementById('name').value || null
+            };
+
+            // Add type-specific fields
+            if (selectedRole === 'PO') {
+                // Add required PO fields
+                Object.assign(formData, {
+                    partner: document.getElementById('partner').value,
+                    phone1: document.getElementById('phone1').value,
+                    phone2: document.getElementById('phone2').value || null,
+                    nif: document.getElementById('nif').value || null
+                });
+
+                // Add optional PO fields if they exist
+                const poOptionalFields = {
+                    pn: 'pn_po',
+                    pr: 'pr_po',
+                    end: 'end_po',
+                    endcp: 'endcp_po',
+                    cc: 'cc_po',
+                    ccde: 'ccde_po',
+                    ccle: 'ccle_po',
+                    ccv: 'ccv_po',
+                    dnasc: 'dnasc_po'
+                };
+
+                Object.entries(poOptionalFields).forEach(([key, elementId]) => {
+                    const value = document.getElementById(elementId)?.value;
+                    if (value) formData[key] = value;
+                });
+            } else {
+                // Add optional fields for ADLU and RU if they're filled
+                const optionalFields = [
+                    'pn', 'pr', 'end', 'endcp', 'phone1_opt', 'phone2_opt', 'nif_opt',
+                    'cc', 'ccde', 'ccle', 'ccv', 'dnasc'
+                ];
+                
+                optionalFields.forEach(field => {
+                    const element = document.getElementById(field);
+                    if (element && element.value) {
+                        // Remove _opt suffix if present
+                        const key = field.replace('_opt', '');
+                        formData[key] = element.value;
+                    }
+                });
+            }
+
+            try {
+                loader.style.display = 'flex';
+                const response = await fetch('/rest/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (response.ok) {
+                    showAlert('Conta criada com sucesso! Redirecionando...', 'success');
+                    setTimeout(() => {
+                        window.location.href = '/features/auth/login';
+                    }, 2000);
+                } else {
+                    const errorData = await response.json();
+                    showAlert(errorData.message || 'Erro ao criar conta', 'error');
+                }
+            } catch (error) {
+                showAlert('Erro ao conectar com o servidor', 'error');
+                console.error('Registration error:', error);
+            } finally {
+                loader.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html> 

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - TerraWatch</title>
+    <link rel="stylesheet" href="/shared/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+</head>
+<body class="auth-page">
+    <div class="auth-container">
+        <div class="auth-card">
+            <a href="/" class="auth-logo-link">
+                <img src="/shared/img/logo-icon.png" alt="TerraWatch Logo" class="auth-logo">
+                <span class="auth-logo-text">TerraWatch</span>
+            </a>
+            <h1>Bem-vindo de volta!</h1>
+            <p class="auth-subtitle">Entre com sua conta para continuar</p>
+
+            <form id="loginForm" class="auth-form">
+                <div class="form-group">
+                    <label for="username">Nome de Utilizador</label>
+                    <input type="text" id="username" name="username" required 
+                           class="form-control" autocomplete="username">
+                </div>
+                <div class="form-group">
+                    <label for="password">Senha</label>
+                    <div class="password-input">
+                        <input type="password" id="password" name="password" required 
+                               class="form-control" autocomplete="current-password">
+                        <button type="button" class="toggle-password" onclick="togglePassword('password')">
+                            👁️
+                        </button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="remember-forgot">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="remember" name="remember">
+                            <span>Lembrar-me</span>
+                        </label>
+                        <a href="/features/auth/forgot-password" class="forgot-link">Esqueceu a senha?</a>
+                    </div>
+                </div>
+                <div id="loginAlert" class="alert" style="display: none;"></div>
+                <button type="submit" class="btn btn-primary btn-block">Entrar</button>
+            </form>
+
+            <div class="auth-footer">
+                <p>Não tem uma conta? <a href="/features/auth/register">Criar conta</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="/shared/js/common.js"></script>
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            ui.showLoading(true);
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const remember = document.getElementById('remember').checked;
+
+            try {
+                // Use the updated auth.login function
+                await auth.login(username, password, remember);
+                
+                // Redirect to dashboard on successful login
+                window.location.href = '/features/dashboard';
+
+            } catch (error) {
+                showAlert(error.message || 'Erro ao fazer login', 'error');
+            } finally {
+                ui.showLoading(false);
+            }
+        });
+
+        function showAlert(message, type) {
+            // Create alert element
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.innerHTML = `
+                <i class="ri-${type === 'error' ? 'error-warning' : 'check'}-line"></i>
+                <span>${message}</span>
+            `;
+
+            // Add to form
+            const form = document.getElementById('loginForm');
+            const existingAlert = form.querySelector('.alert');
+            if (existingAlert) {
+                existingAlert.remove();
+            }
+            form.insertBefore(alert, form.firstChild);
+
+            // Remove after 5 seconds
+            setTimeout(() => {
+                if (alert.parentNode) {
+                    alert.remove();
+                }
+            }, 5000);
+        }
+
+        function togglePassword(inputId) {
+            const input = document.getElementById(inputId);
+            input.type = input.type === 'password' ? 'text' : 'password';
+        }
+
+        function validatePassword(password) {
+            return password.length >= 8 && 
+                   /[A-Za-z]/.test(password) && 
+                   /[0-9]/.test(password);
+        }
+    </script>
+</body>
+</html> 
